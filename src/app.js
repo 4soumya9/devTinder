@@ -1,44 +1,35 @@
-// console.log("Starting a new project")
-
 const express = require("express");
+
+const connectDB = require("./config/database");
 
 const app = express();
 
-//request handler
-// order is very much imp---Order matters
+const User = require("./models/user");
 
-app.use("/user",(req,res) =>{
-  res.send("HAAAA");
-})
+app.post("/signup", async (req, res) => {
+  //creating a new instance of the User model
+  const user = new User({
+    firstName: "Virat",
+    lastName: "Roy",
+    emailId: "virat@gmail.com",
+    password: "virat@1v",
+  });
 
-//This will only handle GET call to /user
-app.get("/user", (req, res) => {
-  res.send({ firstName: "Soumya", lastName: "Saini" });
+  try {
+    await user.save();
+    res.send("User Added successfully");
+  } catch (error) {
+    res.status(400).send("Error saving the user:" + err.message);
+  }
 });
 
-app.post("/user", (req, res) => {
-  // console.log("Save Data to the Database");
-  //saving the data to DB
-  res.send("Data successfully saved to the database");
-});
-
-app.delete("/user", (req,res) =>{
-  res.send("Deleted");
-})
-
-// this will match all the http method API calls to /test
-app.use("/test", (req, res) => {
-  res.send("Hello from server");
-});
-
-// app.use("/hello",(req,res) =>{
-//     res.send("Hello from server");
-// })
-
-// app.use("/",(req,res) =>{
-//     res.send("Hello from dashboard");
-// })
-
-app.listen(3000, () => {
-  console.log("Server is started 3000");
-});
+connectDB()
+  .then(() => {
+    console.log("Database connection established..");
+    app.listen(7777, () => {
+      console.log("Server is successfully listening on port 7777");
+    });
+  })
+  .catch((err) => {
+    console.log("Database cannot be connected");
+  });
